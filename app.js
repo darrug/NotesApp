@@ -4,16 +4,44 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var model = require('./models-fs/notes');
 var routes = require('./routes/index');
 var indexroute = require('./routes/indexmodule');
 var notes = require('./routes/notesroute');
 var app = express();
 
 //inizializzazione db (su fs)
-model.connect("./Notes", function(err) {
-    if (err) throw err;
-});
+//var model = require('./models-fs/notes');
+//model.connect("./Notes", function(err) {
+//    if (err) throw err;
+//});
+
+//levelup
+//var model = require('./models-levelup/notes');
+//model.connect('./db/levelup/', function(err) {
+//    if (err) throw err;
+//});
+
+//Sqllite3
+//var model = require('./models-sqlite3/notes');
+//model.connect("./db/sqlite3/sqllitedb", function(err) {
+//    if (err) throw err;
+//});
+
+//mysql
+//var model = require('./models-sequelize/notes');
+//model.connect({
+//        dbname: "notedb", username: "test", password: "test", params: {
+//            host: 'localhost',
+//            dialect: 'mysql' }
+//    },
+//    function(err) {
+//        if (err) throw err;
+//    });
+
+//mongodb
+var model = require('./models-mongoose/notes');
+model.connect("mongodb://localhost/notedb");
+
 
 [ indexroute, notes ].forEach(function(router) {
     router.configure({ model: model });
@@ -24,7 +52,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+//app.use(favicon(__dirname + '/public/favicon.
+// ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

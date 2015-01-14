@@ -24,13 +24,17 @@ exports.create = function(key, title, body, callback) {
 exports.update = exports.create;
 
 exports.read = function(key, callback) {
-    fs.readFile(path.join(_dirname, key + '.json'), 'utf8',
-        function(err, data) {
-            if (err) callback(err);
-            else {
-                callback(undefined, JSON.parse(data));
-            }
-        });
+    if (fs.existsSync(path.join(_dirname, key + '.json'))) {
+        fs.readFile(path.join(_dirname, key + '.json'), 'utf8',
+            function (err, data) {
+                if (err) callback(err);
+                else {
+                    callback(undefined, JSON.parse(data));
+                }
+            });
+    }
+    else
+      callback('notfound');
 }
 
 exports.destroy = function(key, callback) {
@@ -51,6 +55,8 @@ exports.titles = function(callback) {
                 function(fname, cb) {
                     var key = path.basename(fname, '.json');
                     exports.read(key, function(err, note) {
+                        if (err=='notfound') cb();
+                        else
                         if (err) cb(err);
                         else {
                             thenotes.push({
